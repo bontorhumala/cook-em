@@ -2,12 +2,12 @@ angular.module('starter.controllers', [])
 
 .controller('WelcomeCtrl', function($scope, $state, $q, UserService, $ionicLoading) {
   console.log("start asu");
-  
+
   var user = UserService.getUser('facebook');
   if(user.userID){
 	$state.go('home');
   }
-  
+
   // This is the success callback from the login method
   var fbLoginSuccess = function(response) {
     if (!response.authResponse){
@@ -113,7 +113,7 @@ angular.module('starter.controllers', [])
 
 .controller('HomeCtrl', function($scope, $cordovaCamera, UserService, $ionicActionSheet, $state, $ionicLoading){
 	$scope.user = UserService.getUser();
-	
+
 	$scope.takeImage = function() {
 		// 2
 		var options = {
@@ -124,7 +124,7 @@ angular.module('starter.controllers', [])
 			popoverOptions: CameraPopoverOptions,
 			saveToPhotoAlbum: false
 		};
-		
+
 		// 3
 		$cordovaCamera.getPicture(options).then(function(imageData) {
 		    // upload to Google
@@ -132,7 +132,7 @@ angular.module('starter.controllers', [])
 			console.log(err);
 		});
     }
-	
+
 	$scope.showLogOutMenu = function() {
 		var hideSheet = $ionicActionSheet.show({
 			destructiveText: 'Logout',

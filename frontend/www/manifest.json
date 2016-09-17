@@ -1,6 +1,6 @@
 {
-  "name": "My Ionic App",
-  "short_name": "My Ionic App",
+  "name": "Cook'em'",
+  "short_name": "Cook'em",
   "start_url": "index.html",
   "display": "standalone",
   "icons": [{
