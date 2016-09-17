@@ -45,3 +45,14 @@
     margin-right: auto;
     display: block;
 }
+
+
+/* Home */
+.home-bg {
+  background-image: url('../login.png');
+  background-repeat: no-repeat;
+}
+
+.slide-menu {
+  background-color: #28a54c;
+}

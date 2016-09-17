@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'starter.controllers'])
+angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'elasticsearch', 'starter.controllers'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -20,29 +20,40 @@ angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'starter.c
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
-	$ionicPlatform.registerBackButtonAction(function (event) {
-	  if ($ionicHistory.currentStateName() === 'home'){
-        event.preventDefault();
-      } else {
-        $ionicHistory.goBack();
-      }
-    }, 100);
-	
   });
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
    $stateProvider
+   .state('app', {
+      url: "/app",
+      abstract: true,
+      templateUrl: "menu.html",
+      controller: 'AppCtrl'
+    })
     .state('welcome', {
       url: '/welcome',
       templateUrl: 'welcome.html',
 	  controller: 'WelcomeCtrl'
     })
-    .state('home', {
+    .state('app.home', {
       url: '/home',
-      templateUrl: 'home.html',
-	  controller: 'HomeCtrl'
-    });
+      views: {
+        'menuContent' :{
+          templateUrl: "home.html",
+          controller: 'HomeCtrl'
+        }
+      }
+    })
+    .state('app.recipe', {
+      url: '/recipe',
+      views: {
+        'menuContent' :{
+          templateUrl: "recipe.html",
+          controller: 'RecipeCtrl'
+        }
+      }
+    })
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/welcome');
 })
@@ -61,4 +72,12 @@ angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'starter.c
     getUser: getUser,
     setUser: setUser
   };
+})
+
+.service('ElasticService', function (esFactory) {
+  return esFactory({
+    host: 'https://w5jmmiui:ilmurlpmgcvo8rjl@apricot-7832938.us-east-1.bonsai.io',
+    apiVersion: '2.3',
+    log: 'trace'
+  });
 });
