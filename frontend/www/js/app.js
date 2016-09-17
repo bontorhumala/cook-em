@@ -27,7 +27,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'starter.c
         $ionicHistory.goBack();
       }
     }, 100);
-	
+
   });
 })
 
