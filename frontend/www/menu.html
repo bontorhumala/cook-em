@@ -6,7 +6,7 @@
   </ion-pane>
 
   <ion-side-menu side="left">
-    <header class="bar bar-header bar-stable">
+    <header class="bar bar-header bar-balanced">
       <h1 class="title">Menu</h1>
     </header>
     <ion-content class="has-header">
@@ -17,12 +17,10 @@
 		    <h3 class="center" style="margin-top:10px">{{user.name}}</h3>
 		  </div>
         </ion-item>
-	    <ion-item nav-clear menu-close href="#/app/home">
-          Home
-        </ion-item>
-        <ion-item nav-clear menu-close ng-click="showLogOutMenu()">
-          Sign Out
-        </ion-item>
+	    <ion-item class="item item-icon-left" nav-clear menu-close href="#/app/home">
+        <i class="icon ion-home"></i> Home</ion-item>
+      <ion-item class="item item-icon-left" nav-clear menu-close ng-click="showLogOutMenu()">
+        <i class="icon ion-log-out"></i> Sign Out</ion-item>
       </ion-list>
     </ion-content>
   </ion-side-menu>
