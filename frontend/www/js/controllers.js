@@ -2,6 +2,12 @@ angular.module('starter.controllers', [])
 
 .controller('WelcomeCtrl', function($scope, $state, $q, UserService, $ionicLoading) {
   console.log("start asu");
+  
+  var user = UserService.getUser('facebook');
+  if(user.userID){
+	$state.go('home');
+  }
+  
   // This is the success callback from the login method
   var fbLoginSuccess = function(response) {
     if (!response.authResponse){
@@ -77,13 +83,13 @@ angular.module('starter.controllers', [])
 							picture : "http://graph.facebook.com/" + success.authResponse.userID + "/picture?type=large"
 						});
 
-						$state.go('app.home');
+						$state.go('home');
 					}, function(fail){
 						// Fail get profile info
 						console.log('profile info fail', fail);
 					});
 				}else{
-					$state.go('app.home');
+					$state.go('welcome');
 				}
       } else {
         // If (success.status === 'not_authorized') the user is logged in to Facebook,
@@ -105,10 +111,8 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('HomeCtrl', function($scope, UserService, $ionicActionSheet, $state, $ionicLoading){
+.controller('HomeCtrl', function($scope, $cordovaCamera, UserService, $ionicActionSheet, $state, $ionicLoading){
 	$scope.user = UserService.getUser();
-
-	$scope.images = [];	
 	
 	$scope.takeImage = function() {
 		// 2
@@ -146,6 +150,7 @@ angular.module('starter.controllers', [])
         // Facebook logout
         facebookConnectPlugin.logout(function(){
           $ionicLoading.hide();
+		  window.localStorage.removeItem("starter_facebook_user");
           $state.go('welcome');
         },
         function(fail){
