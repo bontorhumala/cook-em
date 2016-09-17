@@ -267,12 +267,6 @@ angular.module('starter.controllers', [])
       });
     };
 
-	$scope.recipes = [
-		{ img: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg', name: 'delj'},
-		{ img: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png', name: 'WUIDW'},
-		{ img: 'https://pbs.twimg.com/profile_images/692904108424982528/0PESpDwT.jpg', name: 'diid'}
-	];
-
 	$scope.gotoRecipe = function(recipe) {
 		$rootScope.selectedRecipe = recipe;
 		$state.go('app.recipe');
