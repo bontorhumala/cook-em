@@ -19,7 +19,15 @@ angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'starter.c
     }
     if(window.StatusBar) {
       StatusBar.styleDefault();
-    }	
+    }
+	$ionicPlatform.registerBackButtonAction(function (event) {
+	  if ($ionicHistory.currentStateName() === 'home'){
+        event.preventDefault();
+      } else {
+        $ionicHistory.goBack();
+      }
+    }, 100);
+
   });
 })
 
