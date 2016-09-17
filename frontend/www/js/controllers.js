@@ -1,11 +1,10 @@
 angular.module('starter.controllers', [])
 
-.controller('WelcomeCtrl', function($scope, $state, $q, UserService, $ionicLoading) {
-  console.log("start asu");
-
+.controller('WelcomeCtrl', function($scope, $state, $q, UserService, $ionicHistory, $ionicLoading) {
   var user = UserService.getUser('facebook');
   if(user.userID){
-	$state.go('home');
+	$ionicHistory.nextViewOptions({disableBack: true});
+	$state.go('app.home');
   }
 
   // This is the success callback from the login method
@@ -28,7 +27,8 @@ angular.module('starter.controllers', [])
         picture : "http://graph.facebook.com/" + authResponse.userID + "/picture?type=large"
       });
       $ionicLoading.hide();
-      $state.go('home');
+	  $ionicHistory.nextViewOptions({disableBack: true});
+      $state.go('app.home');
     }, function(fail){
       // Fail get profile info
       console.log('profile info fail', fail);
@@ -82,8 +82,8 @@ angular.module('starter.controllers', [])
 							email: profileInfo.email,
 							picture : "http://graph.facebook.com/" + success.authResponse.userID + "/picture?type=large"
 						});
-
-						$state.go('home');
+					    $ionicHistory.nextViewOptions({disableBack: true});
+						$state.go('app.home');
 					}, function(fail){
 						// Fail get profile info
 						console.log('profile info fail', fail);
@@ -111,28 +111,141 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('HomeCtrl', function($scope, $cordovaCamera, UserService, $ionicActionSheet, $state, $ionicLoading){
+.controller('HomeCtrl', function($scope, $rootScope, ElasticService, esFactory, $cordovaFile, $cordovaFileTransfer, $cordovaCamera, UserService, $ionicActionSheet, $ionicPopup, $state, $ionicLoading){
 	$scope.user = UserService.getUser();
 
 	$scope.takeImage = function() {
-		// 2
+		var me = this;
+		me.image_description = '';
+		me.detection_type = 'LABEL_DETECTION';
+		
+		me.detection_types = {
+          LABEL_DETECTION: 'label',
+          TEXT_DETECTION: 'text',
+          LOGO_DETECTION: 'logo',
+          LANDMARK_DETECTION: 'landmark'
+        };
+		
+		var api_key = 'AIzaSyB9c9_SQMteDaSDAXRluwjVjM6X4eXQRRI';
+		
 		var options = {
 			destinationType : Camera.DestinationType.DATA_URL,
 			sourceType : Camera.PictureSourceType.CAMERA, // Camera.PictureSourceType.PHOTOLIBRARY
-			allowEdit : false,
 			encodingType: Camera.EncodingType.JPEG,
 			popoverOptions: CameraPopoverOptions,
+			correctOrientation: true,
+            cameraDirection: 0,
 			saveToPhotoAlbum: false
 		};
-
-		// 3
 		$cordovaCamera.getPicture(options).then(function(imageData) {
-		    // upload to Google
-		}, function(err) {
+			console.log("frontend get imageData");
+			me.current_image = "data:image/jpeg;base64," + imageData;
+            me.image_description = '';
+            me.locale = '';
+
+            var vision_api_json = {
+              "requests":[
+                {
+                  "image":{
+                    "content": imageData
+                  },
+                  "features":[
+                    {
+                      "type": me.detection_type,
+                      "maxResults": 10
+                    }
+                  ]
+                }
+              ]
+            };
+
+            var file_contents = JSON.stringify(vision_api_json);
+
+            $cordovaFile.writeFile(
+                cordova.file.applicationStorageDirectory,
+                'file.json',
+                file_contents,
+                true
+            ).then(function(result){
+				console.log("frontend got writeFile result");
+                var headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                options.headers = headers;
+                var server = 'https://vision.googleapis.com/v1/images:annotate?key=' + api_key;
+                var filePath = cordova.file.applicationStorageDirectory + 'file.json';
+
+                $cordovaFileTransfer.upload(server, filePath, options, true)
+                    .then(function(result){
+                        var res = JSON.parse(result.response);
+                        var key = me.detection_types[me.detection_type] + 'Annotations';                
+						// me.image_description = res.responses[0][key][5].description;
+						var items = [];
+						console.log(res.responses[0][key].length);
+						for (item in res.responses[0][key]){
+							items.push(res.responses[0][key][item].description);
+						}
+						
+						console.log("Elastic searching...");
+					// ->	//var QUERY = items;
+						var QUERY = ["avocad", "Nectarines"];
+						var queries = "[";
+						for (q in QUERY){
+							queries = queries + '{"fuzzy":{"keywords":"' + QUERY[q] + '"}},';
+						}
+						queries = queries.substring(0, queries.length - 1);
+						queries = queries + ']';
+						ElasticService.search({
+							index: 'cookem',
+							type: 'recipes',
+							body: JSON.parse('{"query": { "bool": { "minimum_number_should_match": 1, "should":' + queries + '}}}')
+							//body: {q: JSON.parse('{"query": { "bool": { "minimum_number_should_match": 1, "should":' + queries + '}}}')}
+						}).then(function (response) {
+							console.log("Elastic search response");
+							$scope.recipes = response.hits.hits;
+						}, function (error) {
+							console.log("ES error gan");
+							console.trace(error.message);
+						});							
+						
+						// showAlert(me.image_description);						
+                  }, function(err){
+                    alert('An error occurred while uploading the file');
+                  });
+            }, function(err){
+				console.log("frontend writing error");					  
+                alert('An error occurred while trying to write the file');
+            });
+
+        }, function(err) {
+			console.log("frontend taking pic error");					  			
 			console.log(err);
 		});
     }
-
+	
+	var showAlert = function(imgDesc) {
+      var alertPopup = $ionicPopup.alert({
+        title: 'Deskripsinya:',
+        template: imgDesc
+      });
+   
+      alertPopup.then(function(res) {
+        console.log('Thank you for using Google Vision Cloud');
+      });
+    };
+	
+	$scope.recipes = [
+		{ img: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg', name: 'delj'},
+		{ img: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png', name: 'WUIDW'},
+		{ img: 'https://pbs.twimg.com/profile_images/692904108424982528/0PESpDwT.jpg', name: 'diid'}
+	];
+	
+	$scope.gotoRecipe = function(recipe) {
+		$rootScope.selectedRecipe = recipe;
+		$state.go('app.recipe');
+	};
+	
 	$scope.showLogOutMenu = function() {
 		var hideSheet = $ionicActionSheet.show({
 			destructiveText: 'Logout',

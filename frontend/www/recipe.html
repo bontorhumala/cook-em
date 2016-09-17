@@ -1,13 +1,15 @@
-<ion-view view-title="{{recipe.name}}">
+<ion-view view-title="{{recipe._source.name}}">
   <ion-nav-buttons side="left">
     <button menu-toggle="left"class="button button-icon icon ion-navicon"></button>
   </ion-nav-buttons>
   <ion-floating-button has-footer="false" button-color="#2AC9AA" icon="ion-plus" icon-color="#fff">
   </ion-floating-button>
   <ion-content>
-	<img ng-src="{{recipe.img}}" style="max-width: 100%">
-	<ol>
-	  <li ng-repeat="step in steps">{{step}}</li>
+	<img ng-src="{{recipe._source.image}}" style="max-width: 100%">
+	<p>{{recipe._source.desc}}</p>
+	<h3>Steps:</h3>
+	<ul>
+	  <li ng-repeat="step in recipe._source.step">{{step}}</li>
 	</ol>
   </ion-content>
 </ion-view>
