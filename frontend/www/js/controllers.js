@@ -1,12 +1,43 @@
 angular.module('starter.controllers', [])
 
+.controller('AppCtrl', function($scope, UserService, $ionicSideMenuDelegate, $ionicActionSheet, $state, $ionicLoading) {
+	$scope.user = UserService.getUser();
+	$scope.showLogOutMenu = function() {
+		var hideSheet = $ionicActionSheet.show({
+			destructiveText: 'Logout',
+			titleText: 'Are you sure you want to logout?',
+			cancelText: 'Cancel',
+			cancel: function() {},
+			buttonClicked: function(index) {
+				return true;
+			},
+			destructiveButtonClicked: function(){
+				$ionicLoading.show({
+				  template: 'Logging out...'
+				});
+
+        // Facebook logout
+        facebookConnectPlugin.logout(function(){
+          $ionicLoading.hide();
+		  window.localStorage.removeItem("starter_facebook_user");
+          $state.go('welcome');
+        },
+        function(fail){
+          $ionicLoading.hide();
+        });
+			}
+		});
+	};
+
+})
+
 .controller('WelcomeCtrl', function($scope, $state, $q, UserService, $ionicHistory, $ionicLoading) {
   var user = UserService.getUser('facebook');
   if(user.userID){
 	$ionicHistory.nextViewOptions({disableBack: true});
 	$state.go('app.home');
   }
-
+  
   // This is the success callback from the login method
   var fbLoginSuccess = function(response) {
     if (!response.authResponse){
@@ -24,7 +55,7 @@ angular.module('starter.controllers', [])
 				userID: profileInfo.id,
 				name: profileInfo.name,
 				email: profileInfo.email,
-        picture : "http://graph.facebook.com/" + authResponse.userID + "/picture?type=large"
+                picture : "http://graph.facebook.com/" + authResponse.userID + "/picture?type=large"
       });
       $ionicLoading.hide();
 	  $ionicHistory.nextViewOptions({disableBack: true});
@@ -113,7 +144,7 @@ angular.module('starter.controllers', [])
 
 .controller('HomeCtrl', function($scope, $rootScope, ElasticService, esFactory, $cordovaFile, $cordovaFileTransfer, $cordovaCamera, UserService, $ionicActionSheet, $ionicPopup, $state, $ionicLoading){
 	$scope.user = UserService.getUser();
-
+	
 	$scope.takeImage = function() {
 		var me = this;
 		me.image_description = '';
@@ -137,6 +168,7 @@ angular.module('starter.controllers', [])
             cameraDirection: 0,
 			saveToPhotoAlbum: false
 		};
+		
 		$cordovaCamera.getPicture(options).then(function(imageData) {
 			console.log("frontend get imageData");
 			me.current_image = "data:image/jpeg;base64," + imageData;
@@ -188,8 +220,8 @@ angular.module('starter.controllers', [])
 						}
 						
 						console.log("Elastic searching...");
-					// ->	//var QUERY = items;
-						var QUERY = ["avocad", "Nectarines"];
+						var QUERY = items;
+					//	var QUERY = ["avocad", "Nectarines"];
 						var queries = "[";
 						for (q in QUERY){
 							queries = queries + '{"fuzzy":{"keywords":"' + QUERY[q] + '"}},';
@@ -249,7 +281,7 @@ angular.module('starter.controllers', [])
 	$scope.showLogOutMenu = function() {
 		var hideSheet = $ionicActionSheet.show({
 			destructiveText: 'Logout',
-			titleText: 'Are you sure you want to logout? This app is awsome so I recommend you to stay.',
+			titleText: 'Are you sure you want to logout?',
 			cancelText: 'Cancel',
 			cancel: function() {},
 			buttonClicked: function(index) {
@@ -272,4 +304,12 @@ angular.module('starter.controllers', [])
 			}
 		});
 	};
+})
+
+.controller('RecipeCtrl', function($scope, $rootScope, UserService, $ionicActionSheet, $state, $ionicLoading){
+	$scope.recipe = $rootScope.selectedRecipe;
+	
+	$scope.steps=['Makan', 'Potong', 'Rebus'];
+	
+	
 })
