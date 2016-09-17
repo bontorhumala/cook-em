@@ -7,9 +7,9 @@
   <ion-content>
     <div class="list">
       <a ng-repeat="recipe in recipes" class="item item-thumbnail-left" ng-click="gotoRecipe({{recipe}})">
-        <img ng-src="{{recipe.img}}">
-        <h2>{{recipe.name}}</h2>
-		<i class="icon ion-spoon"></i> Start cooking
+        <img ng-src="{{recipe._source.image}}">
+        <h2>{{recipe._source.name}}</h2>
+		<i class="icon ion-spoon"></i> {{recipe._source.desc}}
       </a>
 	</div>
   </ion-content>
