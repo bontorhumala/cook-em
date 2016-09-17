@@ -19,41 +19,30 @@ angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'starter.c
     }
     if(window.StatusBar) {
       StatusBar.styleDefault();
-    }	
+    }
+	$ionicPlatform.registerBackButtonAction(function (event) {
+	  if ($ionicHistory.currentStateName() === 'home'){
+        event.preventDefault();
+      } else {
+        $ionicHistory.goBack();
+      }
+    }, 100);
+	
   });
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
    $stateProvider
-    .state('app', {
-      url: "/app",
-      abstract: true,
-      templateUrl: "menu.html",
-      controller: 'AppCtrl'
-    })
     .state('welcome', {
       url: '/welcome',
       templateUrl: 'welcome.html',
 	  controller: 'WelcomeCtrl'
     })
-    .state('app.home', {
+    .state('home', {
       url: '/home',
-	  views: {
-        'menuContent' :{
-          templateUrl: "home.html",
-		  controller: 'HomeCtrl'
-        }
-	  }
-    })
-	.state('app.recipe', {
-      url: '/recipe',
-	  views: {
-        'menuContent' :{
-          templateUrl: "recipe.html",
-		  controller: 'RecipeCtrl'
-        }
-	  }
-	})
+      templateUrl: 'home.html',
+	  controller: 'HomeCtrl'
+    });
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/welcome');
 })
