@@ -1,0 +1,13 @@
+<ion-view view-title="{{recipe.name}}">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left"class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-floating-button has-footer="false" button-color="#2AC9AA" icon="ion-plus" icon-color="#fff">
+  </ion-floating-button>
+  <ion-content>
+	<img ng-src="{{recipe.img}}" style="max-width: 100%">
+	<ol>
+	  <li ng-repeat="step in steps">{{step}}</li>
+	</ol>
+  </ion-content>
+</ion-view>

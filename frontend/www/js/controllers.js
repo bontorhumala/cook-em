@@ -1,11 +1,41 @@
 angular.module('starter.controllers', [])
 
-.controller('WelcomeCtrl', function($scope, $state, $q, UserService, $ionicLoading) {
-  console.log("start asu");
-  
+.controller('AppCtrl', function($scope, UserService, $ionicSideMenuDelegate, $ionicActionSheet, $state, $ionicLoading) {
+	$scope.user = UserService.getUser();
+	$scope.showLogOutMenu = function() {
+		var hideSheet = $ionicActionSheet.show({
+			destructiveText: 'Logout',
+			titleText: 'Are you sure you want to logout?',
+			cancelText: 'Cancel',
+			cancel: function() {},
+			buttonClicked: function(index) {
+				return true;
+			},
+			destructiveButtonClicked: function(){
+				$ionicLoading.show({
+				  template: 'Logging out...'
+				});
+
+        // Facebook logout
+        facebookConnectPlugin.logout(function(){
+          $ionicLoading.hide();
+		  window.localStorage.removeItem("starter_facebook_user");
+          $state.go('welcome');
+        },
+        function(fail){
+          $ionicLoading.hide();
+        });
+			}
+		});
+	};
+
+})
+
+.controller('WelcomeCtrl', function($scope, $state, $q, UserService, $ionicViewService, $ionicLoading) {
   var user = UserService.getUser('facebook');
   if(user.userID){
-	$state.go('home');
+	$ionicViewService.nextViewOptions({disableBack: true});
+	$state.go('app.home');
   }
   
   // This is the success callback from the login method
@@ -25,10 +55,11 @@ angular.module('starter.controllers', [])
 				userID: profileInfo.id,
 				name: profileInfo.name,
 				email: profileInfo.email,
-        picture : "http://graph.facebook.com/" + authResponse.userID + "/picture?type=large"
+                picture : "http://graph.facebook.com/" + authResponse.userID + "/picture?type=large"
       });
       $ionicLoading.hide();
-      $state.go('home');
+	  $ionicViewService.nextViewOptions({disableBack: true});
+      $state.go('app.home');
     }, function(fail){
       // Fail get profile info
       console.log('profile info fail', fail);
@@ -82,8 +113,8 @@ angular.module('starter.controllers', [])
 							email: profileInfo.email,
 							picture : "http://graph.facebook.com/" + success.authResponse.userID + "/picture?type=large"
 						});
-
-						$state.go('home');
+					    $ionicViewService.nextViewOptions({disableBack: true});
+						$state.go('app.home');
 					}, function(fail){
 						// Fail get profile info
 						console.log('profile info fail', fail);
@@ -111,7 +142,7 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('HomeCtrl', function($scope, $cordovaCamera, UserService, $ionicActionSheet, $state, $ionicLoading){
+.controller('HomeCtrl', function($scope, $rootScope, $cordovaCamera, UserService, $ionicActionSheet, $state, $ionicLoading){
 	$scope.user = UserService.getUser();
 	
 	$scope.takeImage = function() {
@@ -133,10 +164,21 @@ angular.module('starter.controllers', [])
 		});
     }
 	
+	$scope.recipes = [
+		{ img: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg', name: 'delj'},
+		{ img: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png', name: 'WUIDW'},
+		{ img: 'https://pbs.twimg.com/profile_images/692904108424982528/0PESpDwT.jpg', name: 'diid'}
+	];
+	
+	$scope.gotoRecipe = function(recipe) {
+		$rootScope.selectedRecipe = recipe;
+		$state.go('app.recipe');
+	};
+	
 	$scope.showLogOutMenu = function() {
 		var hideSheet = $ionicActionSheet.show({
 			destructiveText: 'Logout',
-			titleText: 'Are you sure you want to logout? This app is awsome so I recommend you to stay.',
+			titleText: 'Are you sure you want to logout?',
 			cancelText: 'Cancel',
 			cancel: function() {},
 			buttonClicked: function(index) {
@@ -159,4 +201,12 @@ angular.module('starter.controllers', [])
 			}
 		});
 	};
+})
+
+.controller('RecipeCtrl', function($scope, $rootScope, UserService, $ionicActionSheet, $state, $ionicLoading){
+	$scope.recipe = $rootScope.selectedRecipe;
+	
+	$scope.steps=['Makan', 'Potong', 'Rebus'];
+	
+	
 })
