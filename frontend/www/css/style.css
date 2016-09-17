@@ -1,6 +1,21 @@
 /* Empty. Add your own CSS if you like */
 .login-background {
-    background-image: url('../img/login.jpg')
+    background-image: url('../img/login.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.login-logo {
+  width: 50%;
+  margin: 20% auto;
+}
+
+.facebook-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-bottom: 50px;
+  padding: 40px;
 }
 
 .company-header-avatar{
