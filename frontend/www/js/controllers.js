@@ -145,6 +145,16 @@ angular.module('starter.controllers', [])
 .controller('HomeCtrl', function($scope, $rootScope, ElasticService, esFactory, $cordovaFile, $cordovaFileTransfer, $cordovaCamera, UserService, $ionicActionSheet, $ionicPopup, $state, $ionicLoading){
 	$scope.user = UserService.getUser();
 	
+	$scope.show = function() {
+      $ionicLoading.show({
+        template: '<p>Loading...</p><ion-spinner></ion-spinner>'
+      });
+    };
+    
+    $scope.hide = function(){
+          $ionicLoading.hide();
+    };
+	
 	$scope.takeImage = function() {
 		var me = this;
 		me.image_description = '';
@@ -170,6 +180,7 @@ angular.module('starter.controllers', [])
 		};
 		
 		$cordovaCamera.getPicture(options).then(function(imageData) {
+			$scope.show($ionicLoading);
 			console.log("frontend get imageData");
 			me.current_image = "data:image/jpeg;base64," + imageData;
             me.image_description = '';
@@ -220,8 +231,10 @@ angular.module('starter.controllers', [])
 						}
 						
 						console.log("Elastic searching...");
-						var QUERY = items;
-					//	var QUERY = ["avocad", "Nectarines"];
+					//	var QUERY = items;
+						$scope.queries = items;
+						var QUERY = ["avocad", "Nectarines"];
+						$rootScope.query = QUERY;
 						var queries = "[";
 						for (q in QUERY){
 							queries = queries + '{"fuzzy":{"keywords":"' + QUERY[q] + '"}},';
@@ -234,12 +247,13 @@ angular.module('starter.controllers', [])
 							body: JSON.parse('{"query": { "bool": { "minimum_number_should_match": 1, "should":' + queries + '}}}')
 							//body: {q: JSON.parse('{"query": { "bool": { "minimum_number_should_match": 1, "should":' + queries + '}}}')}
 						}).then(function (response) {
+							$scope.hide($ionicLoading);
 							console.log("Elastic search response");
 							$scope.recipes = response.hits.hits;
 						}, function (error) {
 							console.log("ES error gan");
 							console.trace(error.message);
-						});							
+						});
 						
 						// showAlert(me.image_description);						
                   }, function(err){
@@ -254,6 +268,7 @@ angular.module('starter.controllers', [])
 			console.log("frontend taking pic error");					  			
 			console.log(err);
 		});
+		$scope.hide($ionicLoading);
     }
 	
 	var showAlert = function(imgDesc) {
@@ -267,11 +282,7 @@ angular.module('starter.controllers', [])
       });
     };
 	
-	$scope.recipes = [
-		{ img: 'https://pbs.twimg.com/profile_images/479090794058379264/84TKj_qa.jpeg', name: 'delj'},
-		{ img: 'https://pbs.twimg.com/profile_images/598205061232103424/3j5HUXMY.png', name: 'WUIDW'},
-		{ img: 'https://pbs.twimg.com/profile_images/692904108424982528/0PESpDwT.jpg', name: 'diid'}
-	];
+	$scope.recipes = [];
 	
 	$scope.gotoRecipe = function(recipe) {
 		$rootScope.selectedRecipe = recipe;
@@ -308,6 +319,15 @@ angular.module('starter.controllers', [])
 
 .controller('RecipeCtrl', function($scope, $rootScope, UserService, $ionicActionSheet, $state, $ionicLoading){
 	$scope.recipe = $rootScope.selectedRecipe;
+	var QUERY = $rootScope.query;
+	for(mat in $scope.recipe._source.comp){
+      var m = $scope.recipe._source.comp[mat].mat;
+      if(QUERY.indexOf(m) > -1){
+        $scope.recipe._source.comp[mat]["cl"] = "green";
+      }else{
+        $scope.recipe._source.comp[mat]["cl"] = "grey";
+      }
+    }
 	
 	$scope.steps=['Makan', 'Potong', 'Rebus'];
 	

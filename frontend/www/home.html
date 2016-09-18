@@ -5,11 +5,30 @@
   <ion-floating-button click="takeImage()" has-footer="false" button-color="#2AC9AA" icon="ion-plus" icon-color="#fff">
   </ion-floating-button>
   <ion-content>
-    <div class="list">
+	<div class="row" ng-hide="queries.length">
+		Start taking pictures of your foods
+	</div>
+	<div class="card" ng-show="queries.length">
+	  <div class="item item-divider">
+		Your ingredients:
+	  </div>
+	  <div class="item item-text-wrap">
+		<ul>
+	      <li ng-repeat="query in queries">{{query}}</li>
+	    </ul>
+	  </div>
+	</div>
+	<div class="row" ng-show="queries.length" ng-hide="recipes.length">
+		We cannot find any meal that you can cook right now.
+	</div>
+	<div class="row" ng-show="recipes.length">
+		<h3>Possible meal:</h3>
+	</div>
+	<div class="list" ng-show="recipes.length">
       <a ng-repeat="recipe in recipes" class="item item-thumbnail-left" ng-click="gotoRecipe({{recipe}})">
-        <img ng-src="{{recipe._source.image}}">
-        <h2>{{recipe._source.name}}</h2>
-		<i class="icon ion-spoon"></i> {{recipe._source.desc}}
+      	<img ng-src="{{recipe._source.image}}">
+      	<h2>{{recipe._source.name}}</h2>
+      	<i class="icon ion-spoon"></i> {{recipe._source.desc}}
       </a>
 	</div>
   </ion-content>
