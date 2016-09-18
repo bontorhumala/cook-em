@@ -19,13 +19,13 @@ angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'elasticse
     }
     if(window.StatusBar) {
       StatusBar.styleDefault();
-    }	
+    }
   });
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
    $stateProvider
-    .state('app', {
+   .state('app', {
       url: "/app",
       abstract: true,
       templateUrl: "menu.html",
@@ -38,22 +38,22 @@ angular.module('starter', ['ionic', 'ngCordova', 'ion-floating-menu', 'elasticse
     })
     .state('app.home', {
       url: '/home',
-	  views: {
+      views: {
         'menuContent' :{
           templateUrl: "home.html",
-		  controller: 'HomeCtrl'
+          controller: 'HomeCtrl'
         }
-	  }
+      }
     })
-	.state('app.recipe', {
+    .state('app.recipe', {
       url: '/recipe',
-	  views: {
+      views: {
         'menuContent' :{
           templateUrl: "recipe.html",
-		  controller: 'RecipeCtrl'
+          controller: 'RecipeCtrl'
         }
-	  }
-	})
+      }
+    })
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/welcome');
 })

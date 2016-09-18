@@ -45,3 +45,39 @@
     margin-right: auto;
     display: block;
 }
+
+
+/* Home */
+.home-bg {
+  background-image: url('../login.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.slide-menu {
+  background-color: #28a54c;
+}
+
+.recipe-desc {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;(...)
+}
+
+.item-thumbnail-left {
+  overflow: hidden;
+}
+
+.recipe-desc-container {
+  padding: 10px;
+}
+
+.recipe-desc-container ol {
+  margin: auto 20px auto 20px;
+  padding: 10px;
+  list-style-type: decimal;
+}
+
+.recipe-desc-container li:not(:last-child) {
+    margin-bottom: 5px;
+}

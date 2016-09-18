@@ -37,7 +37,7 @@ angular.module('starter.controllers', [])
 	$ionicHistory.nextViewOptions({disableBack: true});
 	$state.go('app.home');
   }
-  
+
   // This is the success callback from the login method
   var fbLoginSuccess = function(response) {
     if (!response.authResponse){
@@ -62,13 +62,13 @@ angular.module('starter.controllers', [])
       $state.go('app.home');
     }, function(fail){
       // Fail get profile info
-      console.log('profile info fail', fail);
+      console.log('COOK_INFO::profile info fail', fail);
     });
   };
 
   // This is the fail callback from the login method
   var fbLoginError = function(error){
-    console.log('fbLoginError', error);
+    console.log('COOK_INFO::fbLoginError', error);
     $ionicLoading.hide();
   };
 
@@ -91,13 +91,13 @@ angular.module('starter.controllers', [])
 
   //This method is executed when the user press the "Login with facebook" button
   $scope.facebookSignIn = function() {
-	console.log('FB signin');
+	console.log('COOK_INFO::FB signin');
     facebookConnectPlugin.getLoginStatus(function(success){
       if(success.status === 'connected'){
         // The user is logged in and has authenticated your app, and response.authResponse supplies
         // the user's ID, a valid access token, a signed request, and the time the access token
         // and signed request each expire
-        console.log('getLoginStatus', success.status);
+        console.log('COOK_INFO::getLoginStatus', success.status);
 
     		// Check if we have our user saved
     		var user = UserService.getUser('facebook');
@@ -117,7 +117,7 @@ angular.module('starter.controllers', [])
 						$state.go('app.home');
 					}, function(fail){
 						// Fail get profile info
-						console.log('profile info fail', fail);
+						console.log('COOK_INFO::profile info fail', fail);
 					});
 				}else{
 					$state.go('welcome');
@@ -128,7 +128,7 @@ angular.module('starter.controllers', [])
         // Else the person is not logged into Facebook,
 				// so we're not sure if they are logged into this app or not.
 
-				console.log('getLoginStatus', success.status);
+				console.log('COOK_INFO::getLoginStatus', success.status);
 
 				$ionicLoading.show({
           template: 'Logging in...'
@@ -150,25 +150,25 @@ angular.module('starter.controllers', [])
         template: '<p>Loading...</p><ion-spinner></ion-spinner>'
       });
     };
-    
+
     $scope.hide = function(){
           $ionicLoading.hide();
     };
-	
+
 	$scope.takeImage = function() {
 		var me = this;
 		me.image_description = '';
 		me.detection_type = 'LABEL_DETECTION';
-		
+
 		me.detection_types = {
           LABEL_DETECTION: 'label',
           TEXT_DETECTION: 'text',
           LOGO_DETECTION: 'logo',
           LANDMARK_DETECTION: 'landmark'
         };
-		
+
 		var api_key = 'AIzaSyB9c9_SQMteDaSDAXRluwjVjM6X4eXQRRI';
-		
+
 		var options = {
 			destinationType : Camera.DestinationType.DATA_URL,
 			sourceType : Camera.PictureSourceType.CAMERA, // Camera.PictureSourceType.PHOTOLIBRARY
@@ -178,7 +178,7 @@ angular.module('starter.controllers', [])
             cameraDirection: 0,
 			saveToPhotoAlbum: false
 		};
-		
+
 		$cordovaCamera.getPicture(options).then(function(imageData) {
 			$scope.show($ionicLoading);
 			console.log("frontend get imageData");
@@ -222,14 +222,14 @@ angular.module('starter.controllers', [])
                 $cordovaFileTransfer.upload(server, filePath, options, true)
                     .then(function(result){
                         var res = JSON.parse(result.response);
-                        var key = me.detection_types[me.detection_type] + 'Annotations';                
+                        var key = me.detection_types[me.detection_type] + 'Annotations';
 						// me.image_description = res.responses[0][key][5].description;
 						var items = [];
 						console.log(res.responses[0][key].length);
 						for (item in res.responses[0][key]){
 							items.push(res.responses[0][key][item].description);
 						}
-						
+
 						console.log("Elastic searching...");
 					//	var QUERY = items;
 						$scope.queries = items;
@@ -254,41 +254,41 @@ angular.module('starter.controllers', [])
 							console.log("ES error gan");
 							console.trace(error.message);
 						});
-						
-						// showAlert(me.image_description);						
+
+						// showAlert(me.image_description);
                   }, function(err){
                     alert('An error occurred while uploading the file');
                   });
             }, function(err){
-				console.log("frontend writing error");					  
+				console.log("frontend writing error");
                 alert('An error occurred while trying to write the file');
             });
 
         }, function(err) {
-			console.log("frontend taking pic error");					  			
+			console.log("frontend taking pic error");
 			console.log(err);
 		});
 		$scope.hide($ionicLoading);
     }
-	
+
 	var showAlert = function(imgDesc) {
       var alertPopup = $ionicPopup.alert({
         title: 'Deskripsinya:',
         template: imgDesc
       });
-   
+
       alertPopup.then(function(res) {
         console.log('Thank you for using Google Vision Cloud');
       });
     };
-	
+
 	$scope.recipes = [];
-	
+
 	$scope.gotoRecipe = function(recipe) {
 		$rootScope.selectedRecipe = recipe;
 		$state.go('app.recipe');
 	};
-	
+
 	$scope.showLogOutMenu = function() {
 		var hideSheet = $ionicActionSheet.show({
 			destructiveText: 'Logout',
@@ -328,8 +328,8 @@ angular.module('starter.controllers', [])
         $scope.recipe._source.comp[mat]["cl"] = "grey";
       }
     }
-	
+
 	$scope.steps=['Makan', 'Potong', 'Rebus'];
-	
-	
+
+
 })
