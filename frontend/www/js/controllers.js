@@ -144,7 +144,7 @@ angular.module('starter.controllers', [])
 
 .controller('HomeCtrl', function($scope, $rootScope, ElasticService, esFactory, $cordovaFile, $cordovaFileTransfer, $cordovaCamera, UserService, $ionicActionSheet, $ionicPopup, $state, $ionicLoading){
 	$scope.user = UserService.getUser();
-	
+
 	$scope.show = function() {
       $ionicLoading.show({
         template: '<p>Loading...</p><ion-spinner></ion-spinner>'
@@ -231,9 +231,10 @@ angular.module('starter.controllers', [])
 						}
 
 						console.log("Elastic searching...");
-					//	var QUERY = items;
+					  var QUERY = items;
+						items.push("banana");
 						$scope.queries = items;
-						var QUERY = ["avocad", "Nectarines"];
+						//var QUERY = ["avocad", "Nectarines"];
 						$rootScope.query = QUERY;
 						var queries = "[";
 						for (q in QUERY){
